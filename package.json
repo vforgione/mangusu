@@ -1,0 +1,30 @@
+{
+  "name": "mangusu",
+  "description": "mongoose resources for the express framework",
+  "version": "0.0.0",
+  "keywords": [
+    "mongoose",
+    "resource",
+    "express"
+  ],
+  "author": "Vince Forgione",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/vforgione/mangusu"
+  },
+  "homepage": "https://github.com/vforgione/mangusu",
+  "bugs": "https://github.com/vforgione/mangusu/issues",
+  "license": "MIT",
+  "main": "index.js",
+  "engines": {
+    "node": ">=0.9.x"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "devDependencies": {
+    "mocha": "^1.18.2",
+    "should": "^3.3.1",
+    "coffee-script": "^1.7.1"
+  }
+}
