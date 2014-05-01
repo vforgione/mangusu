@@ -3,3 +3,4 @@ node_modules
 *.map
 /index.coffee
 src/*.js
+src/*/*.js

@@ -1,23 +1,23 @@
 class Resource
 
-  constructor: (@model, path) ->
-    @many_path   = "/#{path}"
-    @single_path = "/#{path}/:_id"
+  constructor: (@model, resource_name) ->
+    @many_path   = "/#{resource_name}"
+    @single_path = "/#{resource_name}/:_id"
 
   find_one: ->
-    require('./find_one')(@model)
+    require('./methods/find_one')(@model)
 
   find: ->
-    require('./find')(@model)
+    require('./methods/find')(@model)
 
   create: ->
-    require('./create')(@model)
+    require('./methods/create')(@model)
 
   update: ->
-    require('./update')(@model)
+    require('./methods/update')(@model)
 
   destroy: ->
-    require('./destroy')(@model)
+    require('./methods/destroy')(@model)
 
   make_routes: (app) ->
     app.get     @single_path, @find_one()

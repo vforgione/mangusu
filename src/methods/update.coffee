@@ -1,12 +1,12 @@
+respond = require '../responses'
+
 module.exports = (Model) ->
   (req, res) ->
     Model.findById req.params._id, (err, model) ->
       if err
-        console.log err.message
-        res.send 404, err.message
+        respond.not_found res, err.message
       model.set req.params
       model.save (err) ->
         if err
-          console.log err.message
-          res.send 400, err.message
-        res.send model
+          respond.not_acceptable res, err.message
+        respond.reset res, model
