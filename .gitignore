@@ -1,5 +1,5 @@
 .idea
 node_modules
 *.map
-index.coffee
+/index.coffee
 src/*.js
