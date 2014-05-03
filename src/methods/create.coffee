@@ -1,9 +1,24 @@
 respond = require '../responses'
+ref2resource = require('./dry').ref2resource
+self_uri = require('./dry').self_uri
 
-module.exports = (Model) ->
+
+module.exports = (Model, options) ->
   (req, res) ->
+    # create a new model with the payload
     model = new Model req.body
+
+    # save it
     model.save (err) ->
-      if err
-        respond.not_acceptable res, err.message
-      respond.created res, model
+      # catch validation issues
+      if err then respond.not_acceptable res, err.message
+
+      # good to go
+      else
+        # if refs option, update refs to resource uris
+        if options.refs? then ref2resource model, options.refs
+        # create a self uri
+        self_uri model options.path
+
+        # return model
+        respond.ok res, model

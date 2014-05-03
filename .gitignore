@@ -4,3 +4,4 @@ node_modules
 /index.coffee
 src/*.js
 src/*/*.js
+test/*.coffee
