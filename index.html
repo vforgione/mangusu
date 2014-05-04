@@ -36,10 +36,7 @@
 <h2>
 <a name="api-contents" class="anchor" href="#api-contents"><span class="octicon octicon-link"></span></a>api contents</h2>
 
-<ul>
-<li>auto-gen TOC:
-{:toc}</li>
-</ul><h2>
+<h2>
 <a name="resource" class="anchor" href="#resource"><span class="octicon octicon-link"></span></a>resource</h2>
 
 <p><code>resource</code> is what this whole thing pushes out - it's a simple means of mapping http verbs to mongoose model methods.</p>
@@ -210,6 +207,160 @@ ExampleResource.make_paths(app);
 <p><strong>single_path</strong> is constructed from the <code>many_path</code> -- it appends <code>/:_id</code> to the path to set the <code>_id</code> field of the document as the key for finding one document.</p>
 
 <p><strong>options</strong> were explained pretty well in the constructor section.</p>
+
+<h2>
+<a name="methods" class="anchor" href="#methods"><span class="octicon octicon-link"></span></a>methods</h2>
+
+<p>if you haven't read the stuff about route mapping (via the <code>make_routes</code> function), i would suggest you do that now.</p>
+
+<p>anywho, the method calls are pretty standard in most respects. i say most because this is where i sugared the project.</p>
+
+<h3>
+<a name="sugar" class="anchor" href="#sugar"><span class="octicon octicon-link"></span></a>sugar!</h3>
+
+<p>it's the little things that count.</p>
+
+<p><strong>refs</strong></p>
+
+<p>the sugar has been lightly covered before with the <code>refs</code> option that can be passed. </p>
+
+<p>granted, mongodb doesn't have relations, but you can set up references to other docs using the <code>{ type: ObjectId, ref: your_model_here }</code> routine. that's cool and all, but a standard retrieval doesn't give you a resource pointer. sure, you can populate, but that's not very <em>resty</em> of you.</p>
+
+<p>my solution is to generate those resource pointers; that is, if you supply the <code>refs</code>.</p>
+
+<p>if you take the above example using people and what clique they're in, the methods will return something like this:</p>
+
+<pre><code>{
+  name: "Col. Bud Manstrong",
+  clique: "/cliques/&lt;some clique's _id&gt;",
+  _id: &lt;bud's _id&gt;
+}
+</code></pre>
+
+<p>again, this isn't something huge and mind-blowing, it's just there to make your front-end a little easier to maintain.</p>
+
+<p><strong>self uri</strong></p>
+
+<p>if you call the <code>find()</code> method, you'd get back a list of documents, each containing their own <code>_id</code> fields. cool, totally parseable. </p>
+
+<p>what would be cooler would be to slap that to the end of the resource name and make it another field called <code>resource_uri</code>.</p>
+
+<p>let's recycle that clique example again...</p>
+
+<pre><code>{
+  name: "Col. Bud Manstrong",
+  clique: "/cliques/&lt;some clique's _id&gt;",
+  _id: &lt;bud's _id&gt;,
+  resource_uri: "/people/&lt;bud's _id&gt;"
+}
+</code></pre>
+
+<p>not really helpful in <code>find_one</code>, <code>update</code> and <code>destroy</code> (because you obviously already have that id), but when getting a list stuff, it could be pretty useful.</p>
+
+<p><strong>meta</strong></p>
+
+<p>i've also added meta data to the <code>find()</code> method on top to the <code>resource_uri</code>. it makes more sense if you read it in the method's docs.</p>
+
+<h3>
+<a name="find" class="anchor" href="#find"><span class="octicon octicon-link"></span></a>find()</h3>
+
+<p>returns a list of documents.</p>
+
+<p><strong>options via query string</strong></p>
+
+<p>you can do some cool stuff here using the query string. here's some basics:</p>
+
+<ul>
+<li>
+<code>limit</code> sets the number of docs returned. remember, this defaults to 20</li>
+<li>
+<code>skip</code> helps you paginate the results in conjunction with limits</li>
+<li>
+<code>sort</code> like a fucking boss, ascending or descending</li>
+</ul><p><strong>examples</strong></p>
+
+<table>
+<thead><tr>
+<th>url</th>
+<th>what to expect</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>/people?sort=-age</code></td>
+<td>a list of people in descending order by their age</td>
+</tr>
+<tr>
+<td><code>/people?skip=10&amp;limit=10</code></td>
+<td>page 2 of a list of people in groups of 10</td>
+</tr>
+<tr>
+<td><code>/people?skip=10&amp;limit=10&amp;sort=age</code></td>
+<td>page 2 of a list of people in groups of 10 sorted ascending by age</td>
+</tr>
+</tbody>
+</table><p><strong>more options via query string</strong></p>
+
+<p>there's more? you're god damned right!</p>
+
+<p>i failed to include examples about querying by document keys. you already knew you could do that. but i also hacked in the ability to query keys using native mongodb projections!</p>
+
+<p><strong>examples</strong></p>
+
+<table>
+<thead><tr>
+<th>url</th>
+<th>what to expect</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>/people?age={"$gte":18,"$lte":35}</code></td>
+<td>a list of documents matching an age range of 18 to 35</td>
+</tr>
+<tr>
+<td><code>/people?name={"$in":["hank","dean"]}&amp;clone=true</code></td>
+<td>a list of documents whose names are hank or dean and are clones</td>
+</tr>
+</tbody>
+</table><p><strong>even more!</strong></p>
+
+<p>moar!? yep. </p>
+
+<p>remember when i said find returns a lit of documents? well, that's not all. it also returns a decent amount of meta information about your query as well.</p>
+
+<p>here's an example of what gets kicked out:</p>
+
+<pre><code># /people?age={"$gte":18,"$lte":35}&amp;gender=male
+
+{
+  meta: {
+    page_size: 20,
+    count: 142,
+    next: "/people?age={"$gte":18,"$lte":35}&amp;gender=male&amp;limit=20&amp;skip=20",
+    previous: null
+  },
+  objects: [
+      { name: "Some Dude", age: 28, gender: "male", _id: "&lt;dude's _id&gt;", resource_uri: "/people/&lt;dude's _id&gt;" },
+      // and 19 others just like him
+  ]
+}
+
+
+# so then we call the `next` query: /people?age={"$gte":18,"$lte":35}&amp;gender=male&amp;limit=20&amp;skip=20
+{
+  meta: {
+    page_size: 20,
+    count: 142,
+    next: "/people?age={"$gte":18,"$lte":35}&amp;gender=male&amp;limit=20&amp;skip=40",
+    previous: "/people?age={"$gte":18,"$lte":35}&amp;gender=male&amp;limit=20&amp;skip=0"
+  },
+  objects: [
+      { name: "Some Other Dude", age: 23, gender: "male", _id: "&lt;other dude's _id&gt;", resource_uri: "/people/&lt;other dude's _id&gt;" },
+      // and 19 others just like him
+  ]
+}
+</code></pre>
+
+<p>you get a page size (limit, really), the total count of documents matching your query, and uri's for the previous and next pages.</p>
       </section>
     </div>
 
