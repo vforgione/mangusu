@@ -1,7 +1,7 @@
 {
   "name": "mangusu",
   "description": "mongoose resources for the express framework",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "keywords": [
     "mongoose",
     "resource",
