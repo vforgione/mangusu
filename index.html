@@ -33,25 +33,183 @@
       <section id="main_content" class="inner">
         <p><a href="https://travis-ci.org/vforgione/mangusu"><img src="https://travis-ci.org/vforgione/mangusu.svg?branch=master" alt="Build Status"></a></p>
 
+<h2>
+<a name="api-contents" class="anchor" href="#api-contents"><span class="octicon octicon-link"></span></a>api contents</h2>
+
+<ul>
+<li>auto-gen TOC:
+{:toc}</li>
+</ul><h2>
+<a name="resource" class="anchor" href="#resource"><span class="octicon octicon-link"></span></a>resource</h2>
+
+<p><code>resource</code> is what this whole thing pushes out - it's a simple means of mapping http verbs to mongoose model methods.</p>
+
 <h3>
-<a name="api-contents" class="anchor" href="#api-contents"><span class="octicon octicon-link"></span></a>api contents</h3>
+<a name="constructor" class="anchor" href="#constructor"><span class="octicon octicon-link"></span></a>constructor</h3>
+
+<p>creates a new instance of a <code>resource</code></p>
+
+<p><strong>parameters</strong></p>
 
 <ul>
-<li>resource</li>
-<li>methods
+<li>
+<code>model</code> a <a href="http://mongoosejs.com/docs/models.html">mongoose model</a>
+</li>
+<li>
+<code>resource_name</code> the canonical path of the resource</li>
+<li>
+<code>options</code> an optional hash of configuration options</li>
+</ul><p><strong>options</strong></p>
 
 <ul>
-<li>find</li>
-<li>find_one</li>
-<li>create</li>
-<li>update</li>
-<li>destroy</li>
-<li>dry</li>
+<li>
+<code>limit</code> the page size to be returned from a <code>.find()</code> call
+
+<ul>
+<li>default is <code>20</code>
+</li>
 </ul>
 </li>
-<li>responses</li>
-<li>todo</li>
+<li>
+<code>refs</code> is a hash of model field names and their related resources
+
+<ul>
+<li>defaults to <code>null</code>
+</li>
 </ul>
+</li>
+</ul><p><strong>examples</strong></p>
+
+<pre><code>ExampleSchema = new mongoose.Schema({ name: String });
+ExampleModel = mongoose.model('ExampleModel', ExampleSchema);
+
+/* 
+ * simple use:
+ * creates a resource for a given ExampleModel
+ *
+ * -----------------------------------------------------------------
+ * NOTE: do not instantiate the model - just use the functional type
+ * -----------------------------------------------------------------
+ */
+
+ExampleResource = new Resource(ExampleModel, 'example-models');
+
+
+/*
+ * simple with custom page sizes:
+ * same as the other, except this will now default to pages of 5
+ */
+
+ExampleResource = new Resource(ExampleModel, 'example-models', { limit: 5 });
+
+/*
+ * slightly more involved example:
+ * sets references
+ */
+
+CliqueSchema = new mongoose.Schema({ name: String });
+Clique = mongoose.model('Clique', CliqueSchema);
+
+PersonSchema = new mongoose.Schema({ name: String, clique: { type: ObjectId, ref: Clique } });
+Person = mongoose.model('Person', PersonSchema);
+
+CliqueResource = new Resource(Clique, 'cliques');
+PersonResource = new Resource(Person, 'people', { refs: { clique: CliqueResource } });
+</code></pre>
+
+<h3>
+<a name="make_routes" class="anchor" href="#make_routes"><span class="octicon octicon-link"></span></a>.make_routes()</h3>
+
+<p>shortcuts having to write out paths for the app.</p>
+
+<p><strong>parameters</strong></p>
+
+<ul>
+<li>
+<code>app</code> the express application you're working on</li>
+</ul><p><strong>how it maps</strong></p>
+
+<p>the mapping is pretty straight-forward: it uses the <code>resource_name</code> parameter from the constructor to make two routes: <code>many_path</code> and <code>single_path</code>.</p>
+
+<p><code>many_path</code> simply prepends the <code>resource_name</code> with a slash: i.e. our previous people example, would be reached at <code>/people</code>.</p>
+
+<p><code>single_path</code> appends the express param variable format for the document's <code>_id</code> field to the <code>many_path</code> -- <code>/people/:_id</code>.</p>
+
+<p>a full detail is as follows (for a given <code>people</code> resource path):</p>
+
+<table>
+<thead><tr>
+<th>verb</th>
+<th>route</th>
+<th>method</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/people</code></td>
+<td>find()</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/people/:_id</code></td>
+<td>find_one()</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/people</code></td>
+<td>create()</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/people/:_id</code></td>
+<td>update()</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/people/:_id</code></td>
+<td>destroy()</td>
+</tr>
+</tbody>
+</table><p><strong>example</strong></p>
+
+<pre><code>/* shortcuts the following:
+ *
+ * app.get('/people', ExampleResource.find());
+ * app.get('/people/:_id', ExampleResource.find_one());
+ * app.post('/people', ExampleResource.create());
+ * app.put('/people/:_id', ExampleResource.update());
+ * app.delete('/people/:_id', ExampleResource.destroy());
+ *
+ * nothing huge, but it saves the tedium
+ */
+var app = express();
+
+// app code and stuff
+
+ExampleSchema = new mongoose.Schema({ name: String });
+ExampleModel = mongoose.model('ExampleModel', ExampleSchema);
+ExampleResource = new Resource(ExampleModel, 'example-models');
+
+ExampleResource.make_paths(app);
+</code></pre>
+
+<h3>
+<a name="properties" class="anchor" href="#properties"><span class="octicon octicon-link"></span></a>properties</h3>
+
+<p>the following properties are given for the <code>resource</code></p>
+
+<ul>
+<li>
+<code>single_path</code> : the routing path for retrieving a single document</li>
+<li>
+<code>many_path</code> : the routing path for retrieving multiple documents</li>
+<li>
+<code>options</code> : the options used in configuration</li>
+</ul><p><strong>many_path</strong> is constructed from the <code>resource_name</code> constructor parameter -- it is simply that value prepended with a slash.</p>
+
+<p><strong>single_path</strong> is constructed from the <code>many_path</code> -- it appends <code>/:_id</code> to the path to set the <code>_id</code> field of the document as the key for finding one document.</p>
+
+<p><strong>options</strong> were explained pretty well in the constructor section.</p>
       </section>
     </div>
 
