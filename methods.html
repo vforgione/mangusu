@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset='utf-8' />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <meta name="description" content="Mangusu : sugared mongoose resources for the express framework" />
+  <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+  <title> | Mangusu API</title>
+</head>
+<body>
+  <!-- HEADER -->
+  <div id="header_wrap" class="outer">
+    <header class="inner">
+      <a id="forkme_banner" href="https://github.com/vforgione/mangusu">View on GitHub</a>
+      <h1 id="project_title">Mangusu</h1>
+      <h2 id="project_tagline">sugared mongoose resources for the express framework</h2>
+      <section id="downloads">
+        <a class="zip_download_link" href="https://github.com/vforgione/mangusu/zipball/master">Download this project as a .zip file</a>
+        <a class="tar_download_link" href="https://github.com/vforgione/mangusu/tarball/master">Download this project as a tar.gz file</a>
+      </section>
+    </header>
+  </div>
+  <!-- /HEADER -->
+  <!-- BODY -->
+  <div id="main_content_wrap" class="outer">
+    <section id="main_content" class="inner">
+      <div>
+        <ul class="nav" style="list-style:none">
+          <li style="display:inline;padding-right:20px"><a href="index.html">Home</a></li>
+          <li style="display:inline;padding-right:20px"><a href="resource.html">Resource</a></li>
+          <li style="display:inline;padding-right:20px"><a href="methods.html">Methods</a></li>
+          <li style="display:inline;padding-right:20px"><a href="response.html">Responses</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>Methods</h2>
+        <p>
+          These are the details for the methods used. They really don't ever need to be called on their own since they're called in the 
+          path mappings, but here's the low down anyway.
+        </p>
+      </div>
+      <div>
+        <h2>Contents</h2>
+        <ul>
+          <li><a href="#find">find</a></li>
+          <li><a href="#find_one">find_one</a></li>
+          <li><a href="#create">create</a></li>
+          <li><a href="#update">update</a></li>
+          <li><a href="#destroy">destroy</a></li>
+        </ul>
+      </div>
+      <div id="find">
+        <h3>find</h3>
+        <p>
+          <strong>Mapping</strong>
+          <table>
+            <tbody>
+              <tr><td>GET</td><td><code>many_path</code></td><td>mongoose.model.find()</td></tr>
+            </tbody>
+          </table>
+        </p>
+        <p>
+          <strong>Details</strong>
+        </p>
+        <p>
+          <strong>Output</strong>
+        </p>
+      </div>
+      <div id="find_one">
+        <h3>find_one</h3>
+        <p>
+          <strong>Mapping</strong>
+          <table>
+            <tbody>
+              <tr><td>GET</td><td><code>single_path</code></td><td>mongoose.model.findById()</td></tr>
+            </tbody>
+          </table>
+        </p>
+        <p>
+          <strong>Details</strong>
+        </p>
+        <p>
+          <strong>Output</strong>
+        </p>
+      </div>
+      <div id="create">
+        <h3>create</h3>
+        <p>
+          <strong>Mapping</strong>
+          <table>
+            <tbody>
+              <tr><td>POST</td><td><code>many_path</code></td><td>mongoose.model.save()</td></tr>
+            </tbody>
+          </table>
+        </p>
+        <p>
+          <strong>Details</strong>
+        </p>
+        <p>
+          <strong>Output</strong>
+        </p>
+      </div>
+      <div id="update">
+        <h3>update</h3>
+        <p>
+          <strong>Mapping</strong>
+          <table>
+            <tbody>
+              <tr><td>PUT</td><td><code>single_path</code></td><td>mongoose.model.findByIdAndUpdate()</td></tr>
+            </tbody>
+          </table>
+        </p>
+        <p>
+          <strong>Details</strong>
+        </p>
+        <p>
+          <strong>Output</strong>
+        </p>
+      </div>
+      <div id="destroy">
+        <h3>destroy</h3>
+        <p>
+          <strong>Mapping</strong>
+          <table>
+            <tbody>
+              <tr><td>DELETE</td><td><code>single_path</code></td><td>mongoose.model.findByIdAndRemove()</td></tr>
+            </tbody>
+          </table>
+        </p>
+        <p>
+          <strong>Details</strong>
+        </p>
+        <p>
+          <strong>Output</strong>
+          For <code>destroy</code> there is no output - the response should be a <code>204 - No Content</code>
+        </p>
+      </div>
+    </section>
+  </div>
+  <!-- /BODY -->
+  <!-- FOOTER  -->
+  <div id="footer_wrap" class="outer">
+    <footer class="inner">
+      <p class="copyright">Mangusu maintained by <a href="https://github.com/vforgione">Vince Forgione</a></p>
+    </footer>
+  </div>
+  <!-- /FOOTER  -->
+</body>
+</html>

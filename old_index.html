@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Mangusu : mongoose model resources for the express framework" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Mangusu</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/vforgione/mangusu">View on GitHub</a>
+
+          <h1 id="project_title">Mangusu</h1>
+          <h2 id="project_tagline">mongoose model resources for the express framework</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/vforgione/mangusu/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/vforgione/mangusu/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p><a href="https://travis-ci.org/vforgione/mangusu"><img src="https://travis-ci.org/vforgione/mangusu.svg?branch=master" alt="Build Status"></a></p>
+
+<h2>
+<a name="api-contents" class="anchor" href="#api-contents"><span class="octicon octicon-link"></span></a>api contents</h2>
+
+<h2>
+<a name="resource" class="anchor" href="#resource"><span class="octicon octicon-link"></span></a>resource</h2>
+
+<p><code>resource</code> is what this whole thing pushes out - it's a simple means of mapping http verbs to mongoose model methods.</p>
+
+<h3>
+<a name="constructor" class="anchor" href="#constructor"><span class="octicon octicon-link"></span></a>constructor</h3>
+
+<p>creates a new instance of a <code>resource</code></p>
+
+<p><strong>parameters</strong></p>
+
+<ul>
+<li>
+<code>model</code> a <a href="http://mongoosejs.com/docs/models.html">mongoose model</a>
+</li>
+<li>
+<code>resource_name</code> the canonical path of the resource</li>
+<li>
+<code>options</code> an optional hash of configuration options</li>
+</ul><p><strong>options</strong></p>
+
+<ul>
+<li>
+<code>limit</code> the page size to be returned from a <code>.find()</code> call
+
+<ul>
+<li>default is <code>20</code>
+</li>
+</ul>
+</li>
+<li>
+<code>refs</code> is a hash of model field names and their related resources
+
+<ul>
+<li>defaults to <code>null</code>
+</li>
+</ul>
+</li>
+</ul><p><strong>examples</strong></p>
+
+<pre><code>ExampleSchema = new mongoose.Schema({ name: String });
+ExampleModel = mongoose.model('ExampleModel', ExampleSchema);
+
+/* 
+ * simple use:
+ * creates a resource for a given ExampleModel
+ *
+ * -----------------------------------------------------------------
+ * NOTE: do not instantiate the model - just use the functional type
+ * -----------------------------------------------------------------
+ */
+
+ExampleResource = new Resource(ExampleModel, 'example-models');
+
+
+/*
+ * simple with custom page sizes:
+ * same as the other, except this will now default to pages of 5
+ */
+
+ExampleResource = new Resource(ExampleModel, 'example-models', { limit: 5 });
+
+/*
+ * slightly more involved example:
+ * sets references
+ */
+
+CliqueSchema = new mongoose.Schema({ name: String });
+Clique = mongoose.model('Clique', CliqueSchema);
+
+PersonSchema = new mongoose.Schema({ name: String, clique: { type: ObjectId, ref: Clique } });
+Person = mongoose.model('Person', PersonSchema);
+
+CliqueResource = new Resource(Clique, 'cliques');
+PersonResource = new Resource(Person, 'people', { refs: { clique: CliqueResource } });
+</code></pre>
+
+<h3>
+<a name="make_routes" class="anchor" href="#make_routes"><span class="octicon octicon-link"></span></a>.make_routes()</h3>
+
+<p>shortcuts having to write out paths for the app.</p>
+
+<p><strong>parameters</strong></p>
+
+<ul>
+<li>
+<code>app</code> the express application you're working on</li>
+</ul><p><strong>how it maps</strong></p>
+
+<p>the mapping is pretty straight-forward: it uses the <code>resource_name</code> parameter from the constructor to make two routes: <code>many_path</code> and <code>single_path</code>.</p>
+
+<p><code>many_path</code> simply prepends the <code>resource_name</code> with a slash: i.e. our previous people example, would be reached at <code>/people</code>.</p>
+
+<p><code>single_path</code> appends the express param variable format for the document's <code>_id</code> field to the <code>many_path</code> -- <code>/people/:_id</code>.</p>
+
+<p>a full detail is as follows (for a given <code>people</code> resource path):</p>
+
+<table>
+<thead><tr>
+<th>verb</th>
+<th>route</th>
+<th>method</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>GET</td>
+<td><code>/people</code></td>
+<td>find()</td>
+</tr>
+<tr>
+<td>GET</td>
+<td><code>/people/:_id</code></td>
+<td>find_one()</td>
+</tr>
+<tr>
+<td>POST</td>
+<td><code>/people</code></td>
+<td>create()</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td><code>/people/:_id</code></td>
+<td>update()</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td><code>/people/:_id</code></td>
+<td>destroy()</td>
+</tr>
+</tbody>
+</table><p><strong>example</strong></p>
+
+<pre><code>/* shortcuts the following:
+ *
+ * app.get('/people', ExampleResource.find());
+ * app.get('/people/:_id', ExampleResource.find_one());
+ * app.post('/people', ExampleResource.create());
+ * app.put('/people/:_id', ExampleResource.update());
+ * app.delete('/people/:_id', ExampleResource.destroy());
+ *
+ * nothing huge, but it saves the tedium
+ */
+var app = express();
+
+// app code and stuff
+
+ExampleSchema = new mongoose.Schema({ name: String });
+ExampleModel = mongoose.model('ExampleModel', ExampleSchema);
+ExampleResource = new Resource(ExampleModel, 'example-models');
+
+ExampleResource.make_paths(app);
+</code></pre>
+
+<h3>
+<a name="properties" class="anchor" href="#properties"><span class="octicon octicon-link"></span></a>properties</h3>
+
+<p>the following properties are given for the <code>resource</code></p>
+
+<ul>
+<li>
+<code>single_path</code> : the routing path for retrieving a single document</li>
+<li>
+<code>many_path</code> : the routing path for retrieving multiple documents</li>
+<li>
+<code>options</code> : the options used in configuration</li>
+</ul><p><strong>many_path</strong> is constructed from the <code>resource_name</code> constructor parameter -- it is simply that value prepended with a slash.</p>
+
+<p><strong>single_path</strong> is constructed from the <code>many_path</code> -- it appends <code>/:_id</code> to the path to set the <code>_id</code> field of the document as the key for finding one document.</p>
+
+<p><strong>options</strong> were explained pretty well in the constructor section.</p>
+
+<h2>
+<a name="methods" class="anchor" href="#methods"><span class="octicon octicon-link"></span></a>methods</h2>
+
+<p>if you haven't read the stuff about route mapping (via the <code>make_routes</code> function), i would suggest you do that now.</p>
+
+<p>anywho, the method calls are pretty standard in most respects. i say most because this is where i sugared the project.</p>
+
+<h3>
+<a name="sugar" class="anchor" href="#sugar"><span class="octicon octicon-link"></span></a>sugar!</h3>
+
+<p>it's the little things that count.</p>
+
+<p><strong>refs</strong></p>
+
+<p>the sugar has been lightly covered before with the <code>refs</code> option that can be passed. </p>
+
+<p>granted, mongodb doesn't have relations, but you can set up references to other docs using the <code>{ type: ObjectId, ref: your_model_here }</code> routine. that's cool and all, but a standard retrieval doesn't give you a resource pointer. sure, you can populate, but that's not very <em>resty</em> of you.</p>
+
+<p>my solution is to generate those resource pointers; that is, if you supply the <code>refs</code>.</p>
+
+<p>if you take the above example using people and what clique they're in, the methods will return something like this:</p>
+
+<pre><code>{
+  name: "Col. Bud Manstrong",
+  clique: "/cliques/&lt;some clique's _id&gt;",
+  _id: &lt;bud's _id&gt;
+}
+</code></pre>
+
+<p>again, this isn't something huge and mind-blowing, it's just there to make your front-end a little easier to maintain.</p>
+
+<p><strong>self uri</strong></p>
+
+<p>if you call the <code>find()</code> method, you'd get back a list of documents, each containing their own <code>_id</code> fields. cool, totally parseable. </p>
+
+<p>what would be cooler would be to slap that to the end of the resource name and make it another field called <code>resource_uri</code>.</p>
+
+<p>let's recycle that clique example again...</p>
+
+<pre><code>{
+  name: "Col. Bud Manstrong",
+  clique: "/cliques/&lt;some clique's _id&gt;",
+  _id: &lt;bud's _id&gt;,
+  resource_uri: "/people/&lt;bud's _id&gt;"
+}
+</code></pre>
+
+<p>not really helpful in <code>find_one</code>, <code>update</code> and <code>destroy</code> (because you obviously already have that id), but when getting a list stuff, it could be pretty useful.</p>
+
+<p><strong>meta</strong></p>
+
+<p>i've also added meta data to the <code>find()</code> method on top to the <code>resource_uri</code>. it makes more sense if you read it in the method's docs.</p>
+
+<h3>
+<a name="find" class="anchor" href="#find"><span class="octicon octicon-link"></span></a>find()</h3>
+
+<p>returns a list of documents.</p>
+
+<p><strong>options via query string</strong></p>
+
+<p>you can do some cool stuff here using the query string. here's some basics:</p>
+
+<ul>
+<li>
+<code>limit</code> sets the number of docs returned. remember, this defaults to 20</li>
+<li>
+<code>skip</code> helps you paginate the results in conjunction with limits</li>
+<li>
+<code>sort</code> like a fucking boss, ascending or descending</li>
+</ul><p><strong>examples</strong></p>
+
+<table>
+<thead><tr>
+<th>url</th>
+<th>what to expect</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>/people?sort=-age</code></td>
+<td>a list of people in descending order by their age</td>
+</tr>
+<tr>
+<td><code>/people?skip=10&amp;limit=10</code></td>
+<td>page 2 of a list of people in groups of 10</td>
+</tr>
+<tr>
+<td><code>/people?skip=10&amp;limit=10&amp;sort=age</code></td>
+<td>page 2 of a list of people in groups of 10 sorted ascending by age</td>
+</tr>
+</tbody>
+</table><p><strong>more options via query string</strong></p>
+
+<p>there's more? you're god damned right!</p>
+
+<p>i failed to include examples about querying by document keys. you already knew you could do that. but i also hacked in the ability to query keys using native mongodb projections!</p>
+
+<p><strong>examples</strong></p>
+
+<table>
+<thead><tr>
+<th>url</th>
+<th>what to expect</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>/people?age={"$gte":18,"$lte":35}</code></td>
+<td>a list of documents matching an age range of 18 to 35</td>
+</tr>
+<tr>
+<td><code>/people?name={"$in":["hank","dean"]}&amp;clone=true</code></td>
+<td>a list of documents whose names are hank or dean and are clones</td>
+</tr>
+</tbody>
+</table><p><strong>even more!</strong></p>
+
+<p>moar!? yep. </p>
+
+<p>remember when i said find returns a lit of documents? well, that's not all. it also returns a decent amount of meta information about your query as well.</p>
+
+<p>here's an example of what gets kicked out:</p>
+
+<pre><code># /people?age={"$gte":18,"$lte":35}&amp;gender=male
+
+{
+  meta: {
+    page_size: 20,
+    count: 142,
+    next: "/people?age={"$gte":18,"$lte":35}&amp;gender=male&amp;limit=20&amp;skip=20",
+    previous: null
+  },
+  objects: [
+      { name: "Some Dude", age: 28, gender: "male", _id: "&lt;dude's _id&gt;", resource_uri: "/people/&lt;dude's _id&gt;" },
+      // and 19 others just like him
+  ]
+}
+
+
+# so then we call the `next` query: /people?age={"$gte":18,"$lte":35}&amp;gender=male&amp;limit=20&amp;skip=20
+{
+  meta: {
+    page_size: 20,
+    count: 142,
+    next: "/people?age={"$gte":18,"$lte":35}&amp;gender=male&amp;limit=20&amp;skip=40",
+    previous: "/people?age={"$gte":18,"$lte":35}&amp;gender=male&amp;limit=20&amp;skip=0"
+  },
+  objects: [
+      { name: "Some Other Dude", age: 23, gender: "male", _id: "&lt;other dude's _id&gt;", resource_uri: "/people/&lt;other dude's _id&gt;" },
+      // and 19 others just like him
+  ]
+}
+</code></pre>
+
+<p>you get a page size (limit, really), the total count of documents matching your query, and uri's for the previous and next pages.</p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Mangusu maintained by <a href="https://github.com/vforgione">vforgione</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>

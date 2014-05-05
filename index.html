@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset='utf-8' />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <meta name="description" content="Mangusu : sugared mongoose resources for the express framework" />
+  <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+  <title>Main | Mangusu API</title>
+</head>
+<body>
+  <!-- HEADER -->
+  <div id="header_wrap" class="outer">
+    <header class="inner">
+      <a id="forkme_banner" href="https://github.com/vforgione/mangusu">View on GitHub</a>
+      <h1 id="project_title">Mangusu</h1>
+      <h2 id="project_tagline">sugared mongoose resources for the express framework</h2>
+      <section id="downloads">
+        <a class="zip_download_link" href="https://github.com/vforgione/mangusu/zipball/master">Download this project as a .zip file</a>
+        <a class="tar_download_link" href="https://github.com/vforgione/mangusu/tarball/master">Download this project as a tar.gz file</a>
+      </section>
+    </header>
+  </div>
+  <!-- /HEADER -->
+  <!-- BODY -->
+  <div id="main_content_wrap" class="outer">
+    <section id="main_content" class="inner">
+      <div>
+        <ul class="nav" style="list-style:none">
+          <li style="display:inline;padding-right:20px"><a href="index.html">Home</a></li>
+          <li style="display:inline;padding-right:20px"><a href="resource.html">Resource</a></li>
+          <li style="display:inline;padding-right:20px"><a href="methods.html">Methods</a></li>
+          <li style="display:inline;padding-right:20px"><a href="response.html">Responses</a></li>
+        </ul>
+      </div>
+      <div>
+        <h2>API Docs</h2>
+        <uL>
+          <li><a href="resource.html">resource object</a></li>
+          <li><a href="methods.html">mapped methods</a></li>
+          <li><a href="response.html">response functions</a></li>
+        </uL>
+      </div>
+      <div>
+        <h2>Project Information</h2>
+        <p>
+          <strong>What's mangusu?</strong><br />
+          Put simply, <code>mangusu</code> is a library for creating resources around mongoose models. If you want a quick and simple 
+          CRUD API for your models, this will knock it out for you with minimal effort.
+        </p>
+        <p>
+          <strong>What's the <em>sugar</em>?</strong><br />
+          The <em>sugary</em> side of <code>mangusu</code> is the stuff I added to the response bodies. For example, I added in things 
+          like <em>resource_uri</em> to the response document (but not to the actual document) and <em>resource pointers</em> for references 
+          to other documents.
+        </p>
+        <p>
+          <strong>What's the point - aren't there a bunch of these out there?</strong><br />
+          Short answer: yeah, there are a bunch of mongoose-express-resource-handler-wrapper things floating around out there, but they're not 
+          for me.<br />Longer answer: I wanted something that operates cleanly, quickly, adds a small amount of helpful information, and then 
+          gets the hell out of my way. I wanted something that would also generate routes and add simplicity to handling. This doesn't exist. 
+          Or if it does, I couldn't find it, or its documentation sucks, or some other stuff that's bitchy and not worth getting into.
+        </p>
+        <p>
+          <strong>How do I get it?</strong><br />
+          Using npm:<br />
+          <pre><code>$ npm install mangusu</code></pre><br />
+          Download the source:<br />
+          <pre><code>$ git clone https://github.com/vforgione/mangusu
+$ cd mangusu
+$ coffee -o lib/ -c src</code></pre><br />
+          Compilation of the coffeescript may not be necessary, but it's a good idea anyway.
+        </p>
+        <p>
+          <strong>What's with the name?</strong><br />
+          The obvious choices where taken, but the projects aren't maintained, and their code sucks so it wasn't worth forking. So I just went 
+          with mongoose, but in Japanese/Romaji (<span style="white-space:nowrap">マングース</span> if you really care). Made sense, I guess. ¯\(°_o)/¯
+        </p>
+      </div>
+    </section>
+  </div>
+  <!-- /BODY -->
+  <!-- FOOTER  -->
+  <div id="footer_wrap" class="outer">
+    <footer class="inner">
+      <p class="copyright">Mangusu maintained by <a href="https://github.com/vforgione">Vince Forgione</a></p>
+    </footer>
+  </div>
+  <!-- /FOOTER  -->
+</body>
+</html>

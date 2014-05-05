@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset='utf-8' />
+  <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+  <meta name="description" content="Mangusu : sugared mongoose resources for the express framework" />
+  <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+  <title>Resource | Mangusu API</title>
+</head>
+<body>
+  <!-- HEADER -->
+  <div id="header_wrap" class="outer">
+    <header class="inner">
+      <a id="forkme_banner" href="https://github.com/vforgione/mangusu">View on GitHub</a>
+      <h1 id="project_title">Mangusu</h1>
+      <h2 id="project_tagline">sugared mongoose resources for the express framework</h2>
+      <section id="downloads">
+        <a class="zip_download_link" href="https://github.com/vforgione/mangusu/zipball/master">Download this project as a .zip file</a>
+        <a class="tar_download_link" href="https://github.com/vforgione/mangusu/tarball/master">Download this project as a tar.gz file</a>
+      </section>
+    </header>
+  </div>
+  <!-- /HEADER -->
+  <!-- BODY -->
+  <div id="main_content_wrap" class="outer">
+    <section id="main_content" class="inner">
+      <div>
+        <ul class="nav" style="list-style:none">
+          <li style="display:inline;padding-right:20px"><a href="index.html">Home</a></li>
+          <li style="display:inline;padding-right:20px"><a href="resource.html">Resource</a></li>
+          <li style="display:inline;padding-right:20px"><a href="methods.html">Methods</a></li>
+          <li style="display:inline;padding-right:20px"><a href="response.html">Responses</a></li>
+        </ul>
+      </div>
+    <div>
+      <h2>Resource</h2>
+      <p>
+        A <code>resource</code> is the primary export of the module. It is the wrapper around a mongoose model that maps http verbs 
+        to mongoose model methods.
+      </p>
+    </div>
+    <div id="contents">
+      <h2>Contents</h2>
+      <ul>
+        <li><a href="#methods">Methods</a><ul>
+          <li><a href="#constructor">constructor</a></li>
+          <li><a href="#make_routes">make_routes</a></li>
+        </ul></li>
+        <li><a href="#options">Options</a><ul>
+          <li><a href="#limit">limit</a></li>
+          <li><a href="#refs">refs</a></li>
+        </ul></li>
+        <li><a href="#properties">Properties</a><ul>
+          <li><a href="#many_path">many_path</a></li>
+          <li><a href="#single_path">single_path</a></li>
+        </ul></li>
+      </ul>
+    </div>
+    <div id="methods">
+      <h2>Methods</h2>
+      <div id="constructor">
+        <h3><em>constructor</em> <code>new Resource(model, resource_name[, options])</code></h3>
+        <p>
+          <strong>Function</strong><br />
+          Creates a new <code>resource</code> object.
+        </p>
+        <p>
+          <strong>Parameters</strong><br />
+          <table>
+            <tbody>
+              <tr>
+                <td><code>model</code></td><td>the mongoose model that you are wrapping</td>
+              </tr>
+              <tr>
+                <td><code>resource_name</code></td><td>the canonical name of the resource</td>
+              </tr>
+              <tr>
+                <td><code>options</code></td><td>an optional hash of configurations &mdash; <a href="#options">see options section for details</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </p>
+        <p>
+          <strong>Examples</strong><br />
+          <pre><code>ExampleSchema = new mongoose.Schema({ name: String });
+ExampleModel = mongoose.model('ExampleModel', ExampleSchema);
+/* 
+ * simple use:
+ * creates a resource for a given ExampleModel
+ *
+ * -----------------------------------------------------------------
+ * NOTE: do not instantiate the model - just use the functional type
+ * -----------------------------------------------------------------
+ */
+
+ExampleResource = new Resource(ExampleModel, 'example-models');
+
+
+/*
+ * simple with custom page sizes:
+ * same as the other, except this will now default to pages of 5
+ */
+
+ExampleResource = new Resource(ExampleModel, 'example-models', { limit: 5 });
+
+/*
+ * slightly more involved example:
+ * sets references
+ */
+
+CliqueSchema = new mongoose.Schema({ name: String });
+Clique = mongoose.model('Clique', CliqueSchema);
+
+PersonSchema = new mongoose.Schema({ name: String, clique: { type: ObjectId, ref: Clique } });
+Person = mongoose.model('Person', PersonSchema);
+
+CliqueResource = new Resource(Clique, 'cliques');
+PersonResource = new Resource(Person, 'people', { refs: { clique: CliqueResource } });</code></pre>
+        </p>
+      </div>
+      <div id="make_routes">
+        <h3>make_routes <code>make_routes(app)</code></h3>
+        <p>
+          <strong>Function</strong><br />
+          Maps HTTP verbs to model methods. It's really just a general shortcut to avoid the repetitiveness of writing routes.
+        </p>
+        <p>
+          <strong>Parameters</strong><br />
+          <table>
+            <tbody>
+              <tr><td><code>app</code></td><td>the express app in use</td></tr>
+            </tbody>
+          </table>
+        </p>
+        <p>
+          <strong>Examples</strong><br />
+          <pre><code>/* shortcuts the following:
+ *
+ * app.get('/people', ExampleResource.find());
+ * app.get('/people/:_id', ExampleResource.find_one());
+ * app.post('/people', ExampleResource.create());
+ * app.put('/people/:_id', ExampleResource.update());
+ * app.delete('/people/:_id', ExampleResource.destroy());
+ *
+ * nothing huge, but it saves the tedium
+ */
+var app = express();
+
+// app code and stuff
+
+ExampleSchema = new mongoose.Schema({ name: String });
+ExampleModel = mongoose.model('ExampleModel', ExampleSchema);
+ExampleResource = new Resource(ExampleModel, 'example-models');
+
+ExampleResource.make_paths(app);</code></pre>
+        </p>
+      </div>
+    </div>
+    <div id="options">
+      <h2>Options</h2>
+      <div id="limit">
+        Keys for the optional <code>options</code> parameter of the constructor.
+        <h3>limit</h3>
+        <p>
+          <strong>Function</strong><br />
+          Sets the limit/page size of the number of documents returned in the <code>find</code> method.
+        </p>
+        <p>
+          <strong>Type</strong><br />
+          The <code>limit</code> key must be an integer.
+        </p>
+        <p>
+          <strong>Default</strong><br />
+          The <code>limit</code> key defaults to <code>20</code>.
+        </p>
+        <p>
+          <strong>Example</strong><br />
+          <pre><code>// limits page size to 10
+YourResource = new Resource(YourModel, 'models', { limit: 10 });
+
+// expands limit to 50
+TonsOfResource = new Resource(YourOtherModel, 'other-models', { limit: 50 });</code></pre>
+        </p>
+      </div>
+      <div id="refs">
+        <h3>refs</h3>
+        <p>
+          <strong>Function</strong><br />
+          Used for generating resource pointers in place of straight <code>_id</code> strings.
+        </p>
+        <p>
+          <strong>Type</strong><br />
+          The <code>refs</code> key must be an object consisting of field names and their referenced <code>resource</code>.
+        </p>
+        <p>
+          <strong>Default</strong><br />
+          The <code>refs</code> key defaults to <code>null</code>.
+        </p>
+        <p>
+          <strong>Example</strong><br />
+          <pre><code>// schema/mode/resource for the reference
+CliqueSchema = new mongoose.Schema({ name: String });
+Clique = mongoose.model('Clique', CliqueSchema);
+CliqueResource = new Resource(Clique, cliques);
+
+// people
+PersonSchema = new mongoose.Schema({ name: String, clique: { tpye: mongoose.Schema.Types.ObjectId, ref: Clique } });
+Person = mongoose.model('Person', PersonSchema);
+PersonResource = new Resource(Person, 'people', { refs: { clique: CliqueResource } });
+
+// now instead of getting { ... clique: "&lt;some long id&gt;", .. }
+// you get { ... clique: "/cliques/&lt;some long id&gt;", ... }</code></pre>
+        </p>
+      </div>
+    </div>
+    <div id="properties">
+      <h2>Properties</h2>
+      <div id="many_path">
+        <h3>many_path</h3>
+        <p>
+          The <code>many_path</code> is what is used when mapping HTTP methods that return a collection of documents.
+        </p>
+        <p>
+          <strong>Value</strong><br />
+          The <code>many_path</code> is created from the <code>resource_name</code> parameter of the constructor. It prepends 
+          it with a forward slash.
+        </p>
+        <p>
+          <strong>Example</strong><br />
+          <pre><code>ArchEnemyResource = new Resource(ArchEnemy, 'arch-enemies');
+console.log(ArchEnemyResource.many_path);
+// "/arch-enemies"</code></pre>
+      </div>
+      <div id="single_path">
+        <h3>single_path</h3>
+        <p>
+          The <code>single_path</code> is what is used when mapping HTTP methods that return a single named document.
+        </p>
+        <p>
+          <strong>Value</strong><br />
+          The <code>single_path</code> is created from the <code>resource_name</code> parameter of the constructor. It prepends 
+          it with a forward slash and appends another slash and an express route parameter for the document's <code>_id</code>.
+        </p>
+        <p>
+          <strong>Example</strong><br />
+          <pre><code>ArchEnemyResource = new Resource(ArchEnemy, 'arch-enemies');
+console.log(ArchEnemyResource.single_path);
+// "/arch-enemies/:_id"</code></pre>
+      </div>
+    </div>
+    </section>
+  </div>
+  <!-- /BODY -->
+  <!-- FOOTER  -->
+  <div id="footer_wrap" class="outer">
+    <footer class="inner">
+      <p class="copyright">Mangusu maintained by <a href="https://github.com/vforgione">Vince Forgione</a></p>
+    </footer>
+  </div>
+  <!-- /FOOTER  -->
+</body>
+</html>
