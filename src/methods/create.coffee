@@ -3,7 +3,7 @@ ref2resource = require('./dry').ref2resource
 self_uri = require('./dry').self_uri
 
 
-module.exports = (Model, options) ->
+module.exports = (Model, emitter, options) ->
   (req, res) ->
     # create a new model with the payload
     model = new Model req.body
@@ -18,7 +18,10 @@ module.exports = (Model, options) ->
         # if refs option, update refs to resource uris
         if options.refs? then ref2resource model, options.refs
         # create a self uri
-        self_uri model options.path
+        self_uri model, options.path
+
+        # emit event
+        emitter.emit 'created', model
 
         # return model
         respond.ok res, model

@@ -1,4 +1,5 @@
 _ = require 'lodash'
+EventEmitter = require('events').EventEmitter
 
 
 ###
@@ -40,6 +41,9 @@ class Resource
     _.merge @options, options
     @options.path = @many_path
 
+    # event emitter
+    @emitter = new EventEmitter()
+
   ###
   returns a single document matching the `_id` request parameter
   ###
@@ -56,19 +60,19 @@ class Resource
   returns a new document created with the request body
   ###
   create: ->
-    require('./methods/create')(@model, @options)
+    require('./methods/create')(@model, @emitter, @options)
 
   ###
   updates a new document matching the `_id` request parameter with the request body
   ###
   update: ->
-    require('./methods/update')(@model, @options)
+    require('./methods/update')(@model, @emitter, @options)
 
   ###
   destroys a single document matching the `_id` request parameter
   ###
   destroy: ->
-    require('./methods/destroy')(@model)
+    require('./methods/destroy')(@model, @emitter)
 
   ###
   sets paths to method handlers for the application
