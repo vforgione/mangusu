@@ -12,7 +12,7 @@
     "type": "git",
     "url": "http://github.com/vforgione/mangusu"
   },
-  "homepage": "https://github.com/vforgione/mangusu",
+  "homepage": "http://vforgione.github.io/mangusu/",
   "bugs": "https://github.com/vforgione/mangusu/issues",
   "license": "MIT",
   "main": "index.js",
