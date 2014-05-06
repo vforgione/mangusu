@@ -34,6 +34,66 @@
       </div>
       <div>
         <h2>Responses</h2>
+        There are custom response functions that are used to wrap the normal express responses &mdash; they're mainly there to just make sure the 
+        correct status codes are being used.
+        <h3>20x</h3>
+        <table>
+          <thead>
+            <tr><th>Function</th><th>Status Code</th><th>Arguments</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>ok</code></td><td>200</td><td><ul><li><code>res</code>: the express response</li><li><code>body</code>: the body of the response</li></ul></td>
+            </tr>
+            <tr>
+              <td><code>created</code></td><td>201</td><td><ul><li><code>res</code>: the express response</li><li><code>body</code>: the body of the response</li></ul></td>
+            </tr>
+            <tr>
+              <td><code>no_content</code></td><td>204</td><td><ul><li><code>res</code>: the express response</li><li><code>body</code>: the body of the response</li></ul></td>
+            </tr>
+            <tr>
+              <td><code>reset</code></td><td>205</td><td><ul><li><code>res</code>: the express response</li><li><code>body</code>: the body of the response</li></ul></td>
+            </tr>
+          </tbody>
+        </table>
+        <h3>40x</h3>
+        <table>
+          <thead>
+            <tr><th>Function</th><th>Status Code</th><th>Arguments</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>bad_request</code></td><td>400</td><td><ul><li><code>res</code>: the express response</li><li><code>body</code>: the body of the response</li></ul></td>
+            </tr>
+            <tr>
+              <td><code>unauthorized</code></td><td>401</td><td><ul><li><code>res</code>: the express response</li><li><code>body</code>: the body of the response</li></ul></td>
+            </tr>
+            <tr>
+              <td><code>forbidden</code></td><td>403</td><td><ul><li><code>res</code>: the express response</li><li><code>body</code>: the body of the response</li></ul></td>
+            </tr>
+            <tr>
+              <td><code>not_found</code></td><td>404</td><td><ul><li><code>res</code>: the express response</li><li><code>body</code>: the body of the response</li></ul></td>
+            </tr>
+            <tr>
+              <td><code>not_acceptable</code></td><td>406</td><td><ul><li><code>res</code>: the express response</li><li><code>body</code>: the body of the response</li></ul></td>
+            </tr>
+            <tr>
+              <td><code>conflict</code></td><td>409</td><td><ul><li><code>res</code>: the express response</li><li><code>body</code>: the body of the response</li></ul></td>
+            </tr>
+          </tbody>
+        </table>
+        <h3>50x</h3>
+        <table>
+          <thead>
+            <tr><th>Function</th><th>Status Code</th><th>Arguments</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>internal_error</code></td><td>500</td><td><ul><li><code>res</code>: the express response</li><li><code>body</code>: the body of the response</li></ul></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>  
     </section>
   </div>
   <!-- /BODY -->
