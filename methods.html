@@ -5,7 +5,7 @@
   <meta http-equiv="X-UA-Compatible" content="chrome=1" />
   <meta name="description" content="Mangusu : sugared mongoose resources for the express framework" />
   <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-  <title> | Mangusu API</title>
+  <title>Methods | Mangusu API</title>
 </head>
 <body>
   <!-- HEADER -->
@@ -52,87 +52,250 @@
       <div id="find">
         <h3>find</h3>
         <p>
-          <strong>Mapping</strong>
+          <strong>Mapping</strong><br />
           <table>
+            <thead>
+              <tr><th>HTTP Verb</th><th>Path</th><th>Mongoose Model Method</th></tr>
+            </thead>
             <tbody>
-              <tr><td>GET</td><td><code>many_path</code></td><td>mongoose.model.find()</td></tr>
+              <tr><td>GET</td><td><code>many_path</code></td><td><code>find</code></td></tr>
             </tbody>
           </table>
         </p>
         <p>
-          <strong>Details</strong>
+          <strong>Details</strong><br />
+          <code>find</code> retrieves as array of documents. There are a number of tweaks added to vanilla mogoose model find 
+          call. The largest change is the object returned: it consists of meta information about the query and the documents. 
+          The keys of the object are <code>meta</code> and <code>objects</code>.
         </p>
         <p>
-          <strong>Output</strong>
+          <em>meta</em><br />
+          The meta object contains the following:<br />
+          <table>
+            <thead>
+              <tr><th>Key</th><th>Value</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>page_size</code></td><td>The number of documents specified by the <code>limit</code> parameter (default is 20)</td>
+              </tr>
+              <tr>
+                <td><code>count</code></td><td>The total number of documents that satify the query</td>
+              </tr>
+              <tr>
+                <td><code>next</code></td><td>If there are multiple pages of results, this is the next logical page (default is <code>null</code>)</td>
+              </tr>
+              <tr>
+                <td><code>previous</code></td><td>If there are multiple pages of results, this is the page that would precede the current result (default is <code>null</code>)</td>
+              </tr>
+            </tbody>
+          </table>
+        </p>
+        <p>
+          <em>objects</em><br />
+          An array of documents that satisfy the query, limited by the <code>page_size</code>.
+        </p>
+        <p>
+          <em>Example Output</em><br />
+          <pre><code>{
+  meta: {
+    page_size:  20,
+    count:      2,
+    next:       null,
+    prevous:    null
+  },
+  objects: [
+    {
+      name:         "Tim-tom",
+      affiliations: [ "The Murderous Moppets", "The Pupae Twins" ]
+    },
+    {
+      name:         "Kevin",
+      affiliations: [ "The Murderous Moppets", "The Pupae Twins" ]
+    }
+  ]
+}</code></pre>
+        </p>
+        <p>
+          <strong>Querying</strong><br />
+          Queries are mapped via the querystring of the request. There are sever ubiquitous options in conjunction with using the model's 
+          properties.
+          <table>
+            <thead>
+              <tr><th>Key</th><th>Value</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>limit</code></td><td>Sets the limit of the number of documents in the result</td>
+              </tr>
+              <tr>
+                <td><code>skip</code></td><td>Sets the number of documents to be skipped in the result &mdash; order is kept by the server as descending by _id</td>
+              </tr>
+              <tr>
+                <td><code>order</code></td><td>Sets the order of the documents in the result by specifying a model property &mdash; prefix with <code>-</code> for descending</td>
+              </tr>
+            </tbody>
+          </table>
+        </p>
+        <p>
+          <strong>Pagination</strong><br />
+          Pagination can be achieved by using the <code>limit</code> and <code>skip</code> keys. This is what is used for the <code>next</code> and 
+          <code>previous</code> keys of the meta information.
+        </p>
+        <p>
+          <strong>Advanced Querying</strong><br />
+          Documents can be queried using <a href="http://docs.mongodb.org/manual/reference/operator/query/" target="_blank">MongoDB Query and Projection Operators</a>.<br /><br />
+          <em>Example</em><br />
+          If you wanted a list of charachters whose ages are between 16 and 20:<br />
+          <pre><code>/characters?age={"$gte":16,"$lte":20}</code></pre><br />(if you're following the trend of Venture Bros. related examples, 
+          this would yield Hank, Dean, Triana and Dermott)
+        </p>
+        <p>
+          <strong>Emits</strong><br />
+          No event emitted.
+        </p>
+        <p>
+          <strong>Returns</strong><br />
+          A JSON object that consists of meta information and an array of documents.
+        </p>
+        <p>
+          <strong>Status Code</strong><br />
+          200
         </p>
       </div>
       <div id="find_one">
         <h3>find_one</h3>
         <p>
-          <strong>Mapping</strong>
+          <strong>Mapping</strong><br />
           <table>
+            <thead>
+              <tr><th>HTTP Verb</th><th>Path</th><th>Mongoose Model Method</th></tr>
+            </thead>
             <tbody>
-              <tr><td>GET</td><td><code>single_path</code></td><td>mongoose.model.findById()</td></tr>
+              <tr><td>GET</td><td><code>single_path</code></td><td><code>findById</code></td></tr>
             </tbody>
           </table>
         </p>
         <p>
-          <strong>Details</strong>
+          <strong>Details</strong><br />
+          <code>find_one</code> finds a single document by id.
         </p>
         <p>
-          <strong>Output</strong>
+          <strong>Emits</strong><br />
+          No event emitted.
+        </p>
+        <p>
+          <strong>Returns</strong><br />
+          The document specified in the request parameter.
+        </p>
+        <p>
+          <strong>Status Code</strong><br />
+          200
         </p>
       </div>
       <div id="create">
         <h3>create</h3>
         <p>
-          <strong>Mapping</strong>
+          <strong>Mapping</strong><br />
           <table>
+            <thead>
+              <tr><th>HTTP Verb</th><th>Path</th><th>Mongoose Model Method</th></tr>
+            </thead>
             <tbody>
-              <tr><td>POST</td><td><code>many_path</code></td><td>mongoose.model.save()</td></tr>
+              <tr><td>POST</td><td><code>many_path</code></td><td><code>create</code></td></tr>
             </tbody>
           </table>
         </p>
         <p>
-          <strong>Details</strong>
+          <strong>Details</strong><br />
+          <code>create</code> creates a new document with the data supplied in the request body.
         </p>
         <p>
-          <strong>Output</strong>
+          <strong>Emits</strong><br />
+          <code>emitter</code> emits an event titled <code>created</code> along with the new document's id.
+        </p>
+        <p>
+          <strong>Returns</strong><br />
+          The new doument.
+        </p>
+        <p>
+          <strong>Status Code</strong><br />
+          201
         </p>
       </div>
       <div id="update">
         <h3>update</h3>
         <p>
-          <strong>Mapping</strong>
+          <strong>Mapping</strong><br />
           <table>
+            <thead>
+              <tr><th>HTTP Verb</th><th>Path</th><th>Mongoose Model Method</th></tr>
+            </thead>
             <tbody>
-              <tr><td>PUT</td><td><code>single_path</code></td><td>mongoose.model.findByIdAndUpdate()</td></tr>
+              <tr><td>PUT</td><td><code>single_path</code></td><td><code>findByIdAndUpdate</code></td></tr>
             </tbody>
           </table>
         </p>
         <p>
-          <strong>Details</strong>
+          <strong>Details</strong><br />
+          <code>update</code> finds a document by id, stores its current value, then executes the update. After that 
+          a diff is performed and then dumped.
         </p>
         <p>
-          <strong>Output</strong>
+          <strong>Emits</strong><br />
+          <code>emitter</code> emits an event titled <code>updated</code> with an additional object:<br /><br />
+          The additional object is the result of <code>deep-diff.diff</code> between the original document and 
+          the new one.<br /><br />
+          For example (using the node repl):<br />
+          <pre><code>> diff = require('deep-diff').diff;
+> existing = { name: 'Dean Venture', dogs: [ 'Scamp' ] }
+{ name: 'Dean Venture', dogs: [ 'Scamp' ] }
+> updated = { name: 'Dean Venture' }
+{ name: 'Dean Venture' }
+> difference = diff(existing, updated);
+[ { kind: 'D',
+    path: [ 'dogs' ],
+    lhs: [ 'Scamp' ] } ]</code></pre><br/><br />
+          For more information about <code>deep-diff</code>, see their documentation at 
+          <a href="https://github.com/flitbit/diff" target="_blank">https://github.com/flitbit/diff</a>.
+        </p>
+        <p>
+          <strong>Returns</strong><br />
+          The new document.
+        </p>
+        <p>
+          <strong>Status Code</strong><br />
+          202
         </p>
       </div>
       <div id="destroy">
         <h3>destroy</h3>
         <p>
-          <strong>Mapping</strong>
+          <strong>Mapping</strong><br />
           <table>
+            <thead>
+              <tr><th>HTTP Verb</th><th>Path</th><th>Mongoose Model Method</th></tr>
+            </thead>
             <tbody>
-              <tr><td>DELETE</td><td><code>single_path</code></td><td>mongoose.model.findByIdAndRemove()</td></tr>
+              <tr><td>DELETE</td><td><code>single_path</code></td><td><code>findByIdAndDestroy</code></td></tr>
             </tbody>
           </table>
         </p>
         <p>
-          <strong>Details</strong>
+          <strong>Details</strong><br />
+          <code>destroy</code> finds a document by id and destroys it.
         </p>
         <p>
-          <strong>Output</strong>
-          For <code>destroy</code> there is no output - the response should be a <code>204 - No Content</code>
+          <strong>Emits</strong><br />
+          <code>emitter</code> emits an event titled <code>destroyed</code>.
+        </p>
+        <p>
+          <strong>Returns</strong><br />
+          Nothing: an HTTP No Content response.
+        </p>
+        <p>
+          <strong>Status Code</strong><br />
+          204
         </p>
       </div>
     </section>
