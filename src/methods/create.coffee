@@ -21,7 +21,7 @@ module.exports = (Model, emitter, options) ->
         self_uri model, options.path
 
         # emit event
-        emitter.emit 'created', model
+        emitter.emit 'created', JSON.stringify model._doc
 
         # return model
         respond.ok res, model
