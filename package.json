@@ -1,7 +1,7 @@
 {
   "name": "mangusu",
   "description": "mongoose resources for the express framework",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "keywords": [
     "mongoose",
     "resource",
@@ -12,7 +12,7 @@
     "type": "git",
     "url": "http://github.com/vforgione/mangusu"
   },
-  "homepage": "https://github.com/vforgione/mangusu",
+  "homepage": "http://vforgione.github.io/mangusu/",
   "bugs": "https://github.com/vforgione/mangusu/issues",
   "license": "MIT",
   "main": "index.js",
