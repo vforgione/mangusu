@@ -5,3 +5,8 @@ node_modules
 src/*.js
 src/*/*.js
 test/*.coffee
+examples/*/node_modules
+examples/*/*.js
+examples/*/*.map
+examples/*/*/*.js
+examples/*/*/*.map
