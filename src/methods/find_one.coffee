@@ -16,7 +16,7 @@ module.exports = (Model, options) ->
       # got a match
       else
         # if refs option, update refs to resource uris
-        if options.refs? then ref2resource model, options.refs
+        if options.refs? then model._doc = ref2resource model._doc, options.refs
 
         # return model
         respond.ok res, model

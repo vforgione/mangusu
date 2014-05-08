@@ -12,7 +12,8 @@ ProductSchema = new Schema {
   brand: { type: ObjectId, ref: Brand, required: true }
   vendors: [ {
     vendor: { type: ObjectId, ref: Vendor, required: true }
-    vendor_sku: Number } ]
+    vendor_sku: Number
+    _id: false } ]
 }
 
 
