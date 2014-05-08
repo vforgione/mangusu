@@ -15,10 +15,12 @@ app.use app.router
 app.use express.errorHandler()
 
 brand_resource = require './resources/brand_resource'
+buyer_resource = require './resources/buyer_resource'
 vendor_resource = require './resources/vendor_resource'
 product_resource = require './resources/product_resource'
 
 brand_resource.make_routes app
+buyer_resource.make_routes app
 vendor_resource.make_routes app
 product_resource.make_routes app
 
