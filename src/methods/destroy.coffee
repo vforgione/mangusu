@@ -9,5 +9,5 @@ module.exports = (Model, emitter) ->
 
       # respond successful destruction
       else
-        emitter.emit 'destroyed', req.parms._id
+        emitter.emit 'destroyed', req.params._id
         respond.no_content res

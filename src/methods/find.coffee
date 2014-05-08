@@ -42,7 +42,7 @@ module.exports = (Model, options) ->
         # update the models
         for model in models
           # if refs option, update refs to resource uris
-          if options.refs? then ref2resource model, options.refs
+          if options.refs? then model._doc = ref2resource model._doc, options.refs
           # create a self uri
           self_uri model, options.path
 

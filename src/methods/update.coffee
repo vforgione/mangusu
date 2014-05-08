@@ -20,7 +20,7 @@ module.exports = (Model, emitter, options) ->
         # good to go
         else
           # if refs option, update refs to resource uris
-          if options.refs? then ref2resource new_model, options.refs
+          if options.refs? then new_model._doc = ref2resource new_model._doc, options.refs
 
           # emit event
           difference = diff(original_model._doc, new_model._doc)
