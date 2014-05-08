@@ -6,7 +6,13 @@ r2r = (doc, refs) ->
   for key, resource of refs
     parts = key.split '.'
     if parts.length == 1
-      new_doc[key] = "#{resource.many_path}/#{new_doc[key]}"
+      if isArray new_doc[key]
+        new_new_doc = []
+        for subdoc in new_doc[key]
+          new_new_doc.push "#{resource.many_path}/#{subdoc}"
+        new_doc[key] = new_new_doc
+      else
+        new_doc[key] = "#{resource.many_path}/#{new_doc[key]}"
     else
       _key = parts[0]
       subdoc = new_doc[_key]
